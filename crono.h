@@ -15,13 +15,6 @@ enum tags
 	NUMBER_OF_TAGS
 }; 
 
-enum timer_state
-{
-	NOT_INITIATED = 0,
-	STARTED,
-	STOPPED
-};
-
 struct tag
 {
 	int count;

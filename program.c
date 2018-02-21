@@ -25,18 +25,17 @@ int main(int argc, char* argv[])
 	{
 		extrae_timer_t *t1 = NULL;
 		t1 = new_interval(FIRST_LOOP);
-		//pid_t tid;
-		//tid = syscall(SYS_gettid);
-		//printf("tid = %d\n",tid);
+		/*pid_t tid;
+		tid = syscall(SYS_gettid);
+		printf("tid = %d\n",tid);*/
 		start_interval(t1);
 		for(int i=0; i<ARRAYSIZE; i++)
 		{
 			a[i] = 100;
 			//a[i] = (int)rand();
 		}
-		start_interval(t1);
 		stop_interval(t1);
-		stop_interval(t1);
+	   	free_interval(t1);	
 	}
 
 	extrae_timer_t *t2 = NULL;
@@ -47,8 +46,10 @@ int main(int argc, char* argv[])
 		b[i] = (a[i] / 2);
 	}
 	stop_interval(t2);
+	stop_interval(t2);
+	free_interval(t2);
 
-
+	
 	#pragma omp parallel
 	{
 		extrae_timer_t t3 = EXTRAE_INTERVAL_INITIALIZER(THIRD_LOOP);
@@ -66,9 +67,10 @@ int main(int argc, char* argv[])
 	printf("finished = %d\n", finished_countdown(t4));
 	sleep(1);
 	printf("finished = %d\n", finished_countdown(t4));
-	
+	free_countdown(t4);
 
-	
+	free(a);
+	free(b);
 	reportAll();
 	//MPI_Finalize();	
 	

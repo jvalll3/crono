@@ -59,6 +59,10 @@ void free_countdown(extrae_timer_t *t)
 extrae_timer_t* new_timer(int tag, int timeout)
 {
 	extrae_timer_t *t = (extrae_timer_t*)malloc(sizeof(extrae_timer_t));
+	//extrae_timer_t *t = (extrae_timer_t*)calloc(1, sizeof(extrae_timer_t));
+	t->t1 = 0;
+	t->t2 = 0;
+	t->delta = 0;
 	t->tag = tag;	
 	t->timeout = timeout;
 	return t;
@@ -82,48 +86,69 @@ void init()
 
 void start_timer(extrae_timer_t *t)
 {
-	//if the timer is not running
-	if(t->t1 == 0)
-	{	
-    	struct timeval start_time;
-		//Initialize delta and get start time
-		t->delta = 0;
-		gettimeofday(&start_time, NULL);
-		t->t1 = getNanos(&start_time);
+	//check if the timer is initialized
+	if(t != NULL)
+	{
+		//Check if the timer is not running
+		if(t->t1 == 0)
+		{
+    		struct timeval start_time;
+			//Initialize delta and get start time
+			gettimeofday(&start_time, NULL);
+			t->t1 = getNanos(&start_time);
+		} else {
+			fprintf(stderr,"ERROR: Timer already started\n");
+		}
+	} else {
+		fprintf(stderr,"ERROR: Timer not initializated\n");
 	}
 }
 
 
 unsigned long long stop_timer(extrae_timer_t *t)
 {
-	//if the timer is still running
-	if(t->t2 == 0)
+	//Check if the timer is initialized
+	if(t != NULL)
 	{
-    	struct timeval stop_time;
-		//Get end time and calculate time difference
-		gettimeofday(&stop_time, NULL);
-		t->t2 = getNanos(&stop_time);
-		t->delta = t->t2 - t->t1;
-		if(t->timeout == 0)
+		//Check timer is still running
+		if(t->t2 == 0)
 		{
-			//Update de tag array with the timer values
-			/*pthread_mutex_lock(&mutex);
-			tags_array[t->tag].accumulatedTime += t->delta;
-			tags_array[t->tag].count++;
-			pthread_mutex_unlock(&mutex);*/
-			__sync_add_and_fetch(&tags_array[t->tag].accumulatedTime, t->delta);
-			__sync_add_and_fetch(&tags_array[t->tag].count, 1);
+    		struct timeval stop_time;
+			//Get end time and calculate time difference
+			gettimeofday(&stop_time, NULL);
+			t->t2 = getNanos(&stop_time);
+			t->delta = t->t2 - t->t1;
+			if(t->timeout == 0)
+			{
+				//Update de tag array with the timer values
+				/*pthread_mutex_lock(&mutex);
+				tags_array[t->tag].accumulatedTime += t->delta;
+				tags_array[t->tag].count++;
+				pthread_mutex_unlock(&mutex);*/
+				__sync_add_and_fetch(&tags_array[t->tag].accumulatedTime, t->delta);
+				__sync_add_and_fetch(&tags_array[t->tag].count, 1);
+			}
+			return t->delta;
+		} else {
+			fprintf(stderr,"ERROR: Timer already stopped\n");
 		}
-		return t->delta;
+	} else {
+		fprintf(stderr,"ERROR: Timer not initializated\n");
 	}
 }
 
 int finished(extrae_timer_t *t)
 {
-	struct timeval now;
-	gettimeofday(&now, NULL);
-	if(getNanos(&now) >= t->t1 + t->timeout) return 1;
-	return 0;
+	//Check if the timer is initialized
+	if(t != NULL)
+	{
+		struct timeval now;
+		gettimeofday(&now, NULL);
+		if(getNanos(&now) >= t->t1 + t->timeout) return 1;
+		return 0;
+	} else {
+		return -1;
+	}
 
 }
 
