@@ -94,7 +94,11 @@ void start_timer(extrae_timer_t *t)
 }
 
 
+<<<<<<< HEAD
 unsigned long long stop_timer(extrae_timer_t *t)
+=======
+void stop_timer(extrae_timer_t *t)
+>>>>>>> cac274dca51b77e2774c0e7ff482ae54f6b51575
 {
 	//if the timer is still running
 	if(t->t2 == 0)
@@ -107,6 +111,7 @@ unsigned long long stop_timer(extrae_timer_t *t)
 		if(t->timeout == 0)
 		{
 			//Update de tag array with the timer values
+<<<<<<< HEAD
 			/*pthread_mutex_lock(&mutex);
 			tags_array[t->tag].accumulatedTime += t->delta;
 			tags_array[t->tag].count++;
@@ -115,6 +120,13 @@ unsigned long long stop_timer(extrae_timer_t *t)
 			__sync_add_and_fetch(&tags_array[t->tag].count, 1);
 		}
 		return t->delta;
+=======
+			pthread_mutex_lock(&mutex);
+			tags_array[t->tag].accumulatedTime += t->delta;
+			tags_array[t->tag].count++;
+			pthread_mutex_unlock(&mutex);
+		}
+>>>>>>> cac274dca51b77e2774c0e7ff482ae54f6b51575
 	}
 }
 
