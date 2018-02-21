@@ -1,4 +1,5 @@
 #!/bin/bash
 make clean
 make
-mpirun -n 2 program
+./program
+#mpirun -n 2 program
