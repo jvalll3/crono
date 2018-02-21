@@ -1,7 +1,7 @@
 CC = gcc
 MPICC = mpicc
 CXX = g++
-CFLAGS  = -O0
+CFLAGS  =
 LDFLAGS =
 GFLAGS = -Og -g
 
