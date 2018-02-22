@@ -35,6 +35,8 @@ int main(int argc, char* argv[])
 			//a[i] = (int)rand();
 		}
 		stop_interval(t1);
+		start_interval(t1);
+		stop_interval(t1);
 	   	free_interval(t1);	
 	}
 
