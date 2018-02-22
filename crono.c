@@ -1,7 +1,9 @@
 #include "crono.h"
 
 extrae_timer_tag tags_array[NUMBER_OF_TAGS];
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+#ifndef HAVE_SYNC_ADD_AND_FETCH
+	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 /******************************************************************************
  ***  INTERVAL API
@@ -22,7 +24,7 @@ extrae_timer_t* new_interval(int tag)
 /**
  *	Call the function start_timer which starts the interval timer t
  *
- * 	@param t extrae_timer_t pointer to the interval timer to start
+ * 	@param t extrae_timer_t Pointer to the interval timer to start
  *
  */
 void start_interval(extrae_timer_t *t)
@@ -34,9 +36,9 @@ void start_interval(extrae_timer_t *t)
  *	Call the function stop_interval which stops the interval timer t if
  *	it has not been stopped before
  *
- *	@param t extrae_timer_t pointer to the interval timer to stop
+ *	@param t extrae_timer_t Pointer to the interval timer to stop
  *
- *	@return Delta of start time and stop time
+ *	@return Difference between start time and stop time in nanoseconds
  */
 unsigned long long stop_interval(extrae_timer_t *t)
 {
@@ -46,7 +48,7 @@ unsigned long long stop_interval(extrae_timer_t *t)
 /**
  *	Call the function free_timer which frees the interval timer t
  *
- *	@param t extrae_timer_t pointer to free
+ *	@param t Pointer to interval timer we want to free
  */
 void free_interval(extrae_timer_t *t)
 {
@@ -58,7 +60,7 @@ void free_interval(extrae_timer_t *t)
  ******************************************************************************/
 
 /**
- *	Call the function new_timer which creates new_timer
+ *	Call the function new_timer which creates a new countdown timer
  *	
  *	@param tag Tag identifier
  *	
@@ -72,7 +74,7 @@ extrae_timer_t* new_countdown(int tag, int timeout)
 /**
  *	Call the function start_timer which starts the countdown timer t
  *
- * 	@param t extrae_timer_t pointer to the countdown timer to start
+ * 	@param t Pointer to the countdown timer we want to start
  *
  */
 void start_countdown(extrae_timer_t *t)
@@ -82,9 +84,9 @@ void start_countdown(extrae_timer_t *t)
 }
 
 /**
- *	Call the function finished that checks if countdown t has finished
+ *	Call the function finished that checks if a countdown timer has finished
  *
- *	@param t extrae_timer_t pointer to the countdown timer to check
+ *	@param t Pointer to the countdown timer we want to check
  *
  *	@return 0 if countdown is keeps running and 1 if it has already finished
  */
@@ -94,9 +96,9 @@ int finished_countdown(extrae_timer_t *t)
 }
 
 /**
- *	Call the function free_timer which frees the countdown timer t
+ *	Call the function free_timer which frees a countdown timer
  *
- *	@param t Pointer to the extrae_timer_t t to free
+ *	@param t Pointer to the countdown timer we want to free
  */
 void free_countdown(extrae_timer_t *t)
 {
@@ -110,7 +112,8 @@ void free_countdown(extrae_timer_t *t)
  * Allocates a new timer and set the default values
  *
  * @param tag Tag identifier
- * @param timeout Timeout if the timer is a countdown, if not, set to 0
+ * @param timeout Will be zero if timer is an interval, otherwise, 
+ * if timer is a countdown it will be greater than zero
  *
  * @return Pointer to the new timer
  */
@@ -127,10 +130,9 @@ extrae_timer_t* new_timer(int tag, int timeout)
 }
 
 /**
- *	Free the extrae_timer_t pointer t if it is not NULL, if it is NULL assign NULL
- *	to its content
+ *	Free the timer pointer if it is not NULL
  *
- *	@param t Pointer to the extrae_timer_t t to free
+ *	@param t Pointer to the timer we want to free
  *
  */
 void free_timer(extrae_timer_t *t){
@@ -158,7 +160,7 @@ void init()
 /**
  *	Starts the timer
  *
- *	@param t Pointer to the extrae_timer_t t to start
+ *	@param t Pointer to the timer we want to start
  *
  */
 void start_timer(extrae_timer_t *t)
@@ -177,11 +179,11 @@ void start_timer(extrae_timer_t *t)
 }
 
 /**
- *	Stops the timer t if this is still running
+ *	Stops a timer if it is still running
  *
- *	@param t Pointer to the extrae_timer_t t to stop
+ *	@param t Pointer to the timer we want to stop
  *
- *	@return Delta of start time and stop time
+ *	@return Difference between start time and stop time of a timer
  */
 unsigned long long stop_timer(extrae_timer_t *t)
 {
@@ -211,19 +213,19 @@ unsigned long long stop_timer(extrae_timer_t *t)
 			}
 			return t->delta;
 		} else {
-			fprintf(stderr,"ERROR: Timer already stopped\n");
+			fprintf(stderr,"ERROR: Timer already stopped, please call start_interval/start_countdown before if you want to reset the timer\n");
 		}
 	} else {
-		fprintf(stderr,"ERROR: Timer not initializated\n");
+		fprintf(stderr,"ERROR: Timer is not initializated,\n please call new_interval/new_countdown first\n");
 	}
 }
 
 /**
- *	Check if the timer t has finished
+ *	Check if the timer has finished
  *
- *	@param t Pointer to the extrae_timer_t t to check
+ *	@param t Pointer to the timer we want to check
  *
- *	@return 0 if countdown is keeps running and 1 if it has already finished
+ *	@return Return 0 if timer keeps running, otherwise return 1
  */
 int finished(extrae_timer_t *t)
 {
@@ -243,7 +245,7 @@ int finished(extrae_timer_t *t)
 /**
  *	Get the time in nanoseconds from a timeval struct
  *
- *	@param t Pointer to the struct timeval t
+ *	@param t Pointer to the struct timeval
  *
  *	@return Time in nanoseconds
  *
@@ -257,6 +259,7 @@ long getNanos(struct timeval *t)
  *	Print the accumulated information of a tag	
  *
  *	@param tag Tag identifier
+ *	
  */
 void report(int tag)
 {
