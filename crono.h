@@ -5,7 +5,7 @@
 
 #define EXTRAE_INTERVAL_INITIALIZER(tag) {0,0,0,tag,0} 
 #define EXTRAE_COUNTDOWN_INITIALIZER(tag, timeout) {0,0,0,tag,timeout} 
-
+#define HAVE_SYNC_ADD_AND_FETCH 
 enum tags                                                                           
 {
 	FIRST_LOOP = 0,
