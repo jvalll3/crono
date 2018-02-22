@@ -257,6 +257,7 @@ long getNanos(struct timeval *t)
  *	Print the accumulated information of a tag	
  *
  *	@param tag Tag identifier
+ *	
  */
 void report(int tag)
 {
